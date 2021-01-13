@@ -5,12 +5,12 @@ const baseURL =
 
 const sommVaxSummaryURL = `${baseURL}/somministrazioni-vaccini-summary-latest.json`;
 const sommVaxDetailURL = `${baseURL}/somministrazioni-vaccini-latest.json`;
-const deliveryVaxDetailURL = `${baseURL}/consegne-vaccini-latest.json`;
+//const deliveryVaxDetailURL = `${baseURL}/consegne-vaccini-latest.json`;
 const vaxSummaryURL = `${baseURL}/vaccini-summary-latest.json`;
 const vaxLocationsURL = `${baseURL}/punti-somministrazione-latest.json`;
 
 const anagraficaSummaryURL = `${baseURL}/anagrafica-vaccini-summary-latest.json`;
-const puntiSommSummaryURL = `${baseURL}/punti-somministrazione-latest.json`;
+//const puntiSommSummaryURL = `${baseURL}/punti-somministrazione-latest.json`;
 const lastUpdateURL = `${baseURL}/last-update-dataset.json`;
 
 const elaborate = (data) => {
@@ -19,7 +19,7 @@ const elaborate = (data) => {
     .filter(filterByAreaITA)
     .reduce(sumDoseX("totale"), 0);
   // datatable and map
-  const dataSomeVaxDetail = data.dataSommVaxDetail.data.map(replaceArea);
+  //const dataSomeVaxDetail = data.dataSommVaxDetail.data.map(replaceArea);
 
   const deliverySummary = data.dataVaxSummary.data.map(replaceArea);
 
