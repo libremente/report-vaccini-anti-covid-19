@@ -182,7 +182,7 @@ const elaborate = (data) => {
     maxNumberOfLocations,
     totalDeliverySummary
   };
-  console.log(aggr)
+
   return aggr;
 };
 

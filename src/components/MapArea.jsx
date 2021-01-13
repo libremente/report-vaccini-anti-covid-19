@@ -14,7 +14,7 @@ export const MapArea = ({
 }) => {
   const [geographies, setGeographies] = useState([]);
   const [maxValue, setMaxValue] = useState(0);
-  console.log(summary)
+
   useEffect(()=>{
     const maxValue = _.maxBy(summary || {}, fillBy)
     setMaxValue(maxValue ? maxValue[fillBy] : 0)
