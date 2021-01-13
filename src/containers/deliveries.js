@@ -10,79 +10,80 @@ export const Deliveries = (
     }
     ) => {
 
-    const [summary, setSummary] = useState({});
     const [deliveryTableData, setDeliveryTableData] = useState([]);
     const [deliverySelectedRegion, setDeliverySelectedRegion] = useState(null);
     const [totalDelivery, setTotalDelivery] = useState(0);
     const [totalAgeByGender, setTotalAgeByGender] = useState({});
-    const [deliveryBarChartData, setdeliveryBarChartDataData] = useState([]);
+    const [deliveryBarChartData, setdeliveryBarChartData] = useState([]);
     const [selectedAge, setSelectedAge] = useState(null);
 
     useEffect(() => {
         if(!isEmpty(data)){
-            setSummary(data);
-            setdeliveryBarChartDataData(data.categoriesAndAges);
+            setdeliveryBarChartData(data.categoriesAndAges);
             setTotalAgeByGender(data.gender);
             setDeliveryTableData(data.totalDeliverySummary);
             setTotalDelivery(data.tot);
+            console.log(data)
         }
     }, [data]);
 
     const resetFilter = () => {
         setDeliverySelectedRegion(null);
-        setDeliveryTableData(summary.totalDeliverySummary);
-        setTotalDelivery(summary.tot);
-        setTotalAgeByGender(summary.gender)
-        setdeliveryBarChartDataData(summary.categoriesAndAges)
-      }
+        setDeliveryTableData(data.totalDeliverySummary);
+        setTotalDelivery(data.tot);
+        setTotalAgeByGender(data.gender);
+        setdeliveryBarChartData(data.categoriesAndAges);
+        setSelectedAge(null);
+    }
 
     const fillMapDeliveryArea = ({region, maxValue, field}) => {
-    let scaleOp = 0
-    if(region.code === deliverySelectedRegion){
-        scaleOp = 1 
-    }else if(!deliverySelectedRegion){
-        scaleOp = max([region[field]/maxValue,0.1])
-    }else{
-        const valueToFill = region[field] / 2
-        scaleOp = max([valueToFill, 0.1])
-    }
-    return `rgba(0,102,204,${scaleOp}) `
+      let scaleOp = 0
+      if(region.code === deliverySelectedRegion){
+          scaleOp = 1 
+      }else if(!deliverySelectedRegion){
+          scaleOp = max([region[field]/maxValue,0.1])
+      }else{
+          const valueToFill = region[field] / 2
+          scaleOp = max([valueToFill, 0.1])
+      }
+      return `rgba(0,102,204,${scaleOp}) `
     }
 
     const handleMapDeliveryClick = (region) => {
 
-        if(deliverySelectedRegion === region.code){
-          setDeliverySelectedRegion(null);
-          setDeliveryTableData(summary.totalDeliverySummary);
-          setTotalDelivery(summary.tot);
-          setTotalAgeByGender(summary.gender)
-          setdeliveryBarChartDataData(summary.categoriesAndAges)
-        }else{
-          const deliveryTableFilteredData = find(deliveryTableData, d => d.code === region.code);
-    
-          setDeliveryTableData([deliveryTableFilteredData])
-          setdeliveryBarChartDataData(deliveryTableFilteredData.byAge)
-          setDeliverySelectedRegion(region.code)
-          setTotalDelivery(region.dosi_somministrate)
-          setTotalAgeByGender({ gen_m: deliveryTableFilteredData.sesso_maschile, gen_f: deliveryTableFilteredData.sesso_femminile });
-        }
+      if(selectedAge){
+        resetFilter()
       }
 
-      const handleDeliveryBarChartClick = (data) => {
-        setDeliverySelectedRegion(null);
-    
-        if(data.fascia_anagrafica === selectedAge){
-          setSelectedAge(null);
-          setDeliveryTableData(summary.totalDeliverySummary);
-          setTotalAgeByGender(summary.gender)
-          setTotalDelivery(summary.tot)
+      if(deliverySelectedRegion === region.code){
+        resetFilter()
+      }else{
+        const deliveryTableFilteredData = find(data.totalDeliverySummary, d => d.code === region.code);
+
+        setDeliveryTableData([deliveryTableFilteredData])
+        setdeliveryBarChartData(deliveryTableFilteredData.byAge || [])
+        setDeliverySelectedRegion(region.code)
+        setTotalDelivery(deliveryTableFilteredData.dosi_somministrate)
+        setTotalAgeByGender({ gen_m: deliveryTableFilteredData.sesso_maschile, gen_f: deliveryTableFilteredData.sesso_femminile });
+      }
+    }
+
+      const handleDeliveryBarChartClick = (bar) => {
+        if(deliverySelectedRegion){
+          resetFilter()
+        }
+
+        if(bar.fascia_anagrafica === selectedAge){
+          resetFilter()
         }else{
-          setTotalDelivery(data.totale)
-          setSelectedAge(data.fascia_anagrafica);
-          setDeliveryTableData(head(summary.totalDeliverySummaryByAge[data.fascia_anagrafica]).details);
-          setTotalAgeByGender({ gen_m: data.sesso_maschile, gen_f: data.sesso_femminile });
+          const details = find(data.categoriesAndAges, i => i.fascia_anagrafica === bar.fascia_anagrafica)
+          console.log(details)
+          setdeliveryBarChartData(data.categoriesAndAges)
+          setTotalDelivery(details.totale)
+          setSelectedAge(bar.fascia_anagrafica);
+          setDeliveryTableData(head(data.totalDeliverySummaryByAge[bar.fascia_anagrafica]).details);
+          setTotalAgeByGender({ gen_m: bar.sesso_maschile, gen_f: bar.sesso_femminile });
         }    
-    
       }
     
     return (
@@ -185,7 +186,7 @@ export const Deliveries = (
         height={300}
         selected={selectedAge}
         property={{ xprop: "fascia_anagrafica", yprop: "totale" }}
-        data={[...deliveryBarChartData]}
+        data={deliveryBarChartData}
       />
     </div>
   </div>

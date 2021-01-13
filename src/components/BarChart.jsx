@@ -21,7 +21,7 @@ export const BarChart = ({
       doExit();
       draw();
   // eslint-disable-next-line 
-  },[data]);
+  },[data, selected]);
 
 
   const responsivefy = (svg) => {
